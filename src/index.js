@@ -1,11 +1,22 @@
+"use strict";
+
 module.exports = {
-    install: function install(Vue, options = {}) {
+  install: function install(Vue) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
     if (!options.disabled && (!options.key || options.key.length === 0)) {
       console.warn("Please enter a Zendesk Web Widget Key");
     }
 
-    const disabledLogger = function(method, ...args) {
-      console.log("Zendesk is disabled, you called:", { method, args });
+    var disabledLogger = function disabledLogger(method) {
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      console.log("Zendesk is disabled, you called:", {
+        method: method,
+        args: args
+      });
     };
 
     if (options.disabled) {
@@ -13,64 +24,95 @@ module.exports = {
     }
 
     window.zESettings = options.settings;
+    var root = new Vue();
+    var isLoaded = false;
 
-    const root = new Vue()
-
-    let isLoaded = false
-
-    root.load = (zendeskKey) => {
+    root.load = function (zendeskKey) {
       if (isLoaded) {
         return;
       }
 
-      const script = document.createElement("script");
+      var script = document.createElement("script");
       script.type = "text/javascript";
       script.async = true;
       script.id = "ze-snippet";
-      script.src =
-        "https://static.zdassets.com/ekr/snippet.js?key=" + zendeskKey;
-
+      script.src = "https://static.zdassets.com/ekr/snippet.js?key=" + zendeskKey;
       delete window.zE;
-      const first = document.getElementsByTagName("script")[0];
+      var first = document.getElementsByTagName("script")[0];
       first.parentNode.insertBefore(script, first);
 
-      script.onload = (event) => {
-        isLoaded = true
+      script.onload = function (event) {
+        isLoaded = true;
 
         if (options.hideOnLoad) {
           root.hide();
         }
 
         root.$emit("loaded", event);
-      }
-
+      };
     };
 
     if (!options.disabled) {
       root.load(options.key);
     }
 
-    root.hide = () => window.zE("webWidget", "hide");
-    root.show = () => window.zE("webWidget", "show");
-    root.logout = () => window.zE("webWidget", "logout");
-    root.identify = user => window.zE("webWidget", "identify", user);
-    root.prefill = user => window.zE("webWidget", "prefill", user);
-    root.setLocale = locale => window.zE("webWidget", "setLocale", locale);
-    root.updateSettings = settings =>
-      window.zE("webWidget", "updateSettings", settings);
-    root.clear = () => window.zE("webWidget", "clear");
-    root.updatePath = options => window.zE("updatePath", "clear", options);
-    root.toggle = () => window.zE("webWidget", "toggle");
-    root.reset = () => window.zE("webWidget", "reset");
-    root.close = () => window.zE("webWidget", "close");
-    root.open = () => window.zE("webWidget", "open");
+    root.hide = function () {
+      return window.zE("webWidget", "hide");
+    };
+
+    root.show = function () {
+      return window.zE("webWidget", "show");
+    };
+
+    root.logout = function () {
+      return window.zE("webWidget", "logout");
+    };
+
+    root.identify = function (user) {
+      return window.zE("webWidget", "identify", user);
+    };
+
+    root.prefill = function (user) {
+      return window.zE("webWidget", "prefill", user);
+    };
+
+    root.setLocale = function (locale) {
+      return window.zE("webWidget", "setLocale", locale);
+    };
+
+    root.updateSettings = function (settings) {
+      return window.zE("webWidget", "updateSettings", settings);
+    };
+
+    root.clear = function () {
+      return window.zE("webWidget", "clear");
+    };
+
+    root.updatePath = function (options) {
+      return window.zE("updatePath", "clear", options);
+    };
+
+    root.toggle = function () {
+      return window.zE("webWidget", "toggle");
+    };
+
+    root.reset = function () {
+      return window.zE("webWidget", "reset");
+    };
+
+    root.close = function () {
+      return window.zE("webWidget", "close");
+    };
+
+    root.open = function () {
+      return window.zE("webWidget", "open");
+    };
 
     Object.defineProperty(root, "zE", {
-      get() {
+      get: function get() {
         return window.zE;
       }
     });
-
     Vue.prototype.$zendesk = root;
   }
 };
