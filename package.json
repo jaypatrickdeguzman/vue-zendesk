@@ -1,7 +1,7 @@
 {
-  "name": "@dansmaculotte/vue-zendesk",
+  "name": "@jaypatrickdeguzman/vue-zendesk",
   "version": "0.4.1",
-  "description": "Vue plugin for Zendesk Web Widget",
+  "description": "Vue plugin for Zendesk Web Widget with IE11 support",
   "license": "MIT",
   "main": "src/index.js",
   "repository": "https://github.com/dansmaculotte/vue-zendesk",
